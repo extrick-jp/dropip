@@ -1,7 +1,7 @@
 # dropip
 Deny the source of brute force attacks.
 
-  version 2.x
+  version 2.x<br />
   copyright 2023. EXTRICK LLC.
 
 ■ What's dropip?
