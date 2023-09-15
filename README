@@ -20,7 +20,6 @@ dropip.py -h または dropip.py --help で表示されます。
 -s --server     apache または nginx を指定します。（apache）
 -l --accesslog  スキャンするログファイルを指定します。（/var/log/httpd/access_log）
 -o --outfile    出力するファイルを指定します。（./deny.conf）
--i --insertfile 出力するファイルに挿入するファイルを指定します。
 -t --threshold  エラー（4xx、5xx）をカウントして拒否する閾値を指定します。（10）
 
 
@@ -91,14 +90,7 @@ pass.log を開いて、怪しいアクセスを探してください。
 
 
 ■ How to
-apache で wordpress が生成した .htaccess があるなど、予め設定した .htaccess がある場合は、.htaccess をリネーム（例：.htaccess.x）しておき、オプション -i で読み込むようにします。出力ファイル（deny.conf）に拒否リストを出力する前に、.htaccess.x の内容を出力します。
-
-例： dropip.py -i .htaccess.x
-
-予めダウンロードした海外のIPリスト（foreign_ip.conf）などがある場合は、オプション -i で読み込むことで、海外のIPリストと dropip が出力した拒否リストを一つのファイルにまとめることができます。
-例： dropip.py -i foreign_ip.conf
-
-cat コマンドを使って、dropip.py の出力ファイル（deny.conf）に設定済みのファイルを結合しても構いません。
+apache で wordpress が生成した .htaccess がある、予めダウンロードした海外のIPリスト（foreign_ip.conf）があるなどの場合は、バッチファイルの中で cat コマンドを使って、dropip.py の出力ファイル（deny.conf）に設定済みのファイルを結合してください。
 例： cat .htaccess.x deny.conf foreign_ip.conf > .htaccess
 
 
