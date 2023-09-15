@@ -1,0 +1,55 @@
+"curl/
+"CONNECT api.findip.net
+"GET /.+\.aspx
+"GET /ab2[a-z]
+"GET /actuator
+"GET /actuator/health
+"GET /admin
+"GET /ads\.txt
+"GET /api/index\.php
+"GET /assets
+"GET /auth
+"GET /autodiscover
+"GET /bin
+"GET /cf_scripts/
+"GET /class\.api\.php
+"GET /debug
+"GET /download
+"GET /e\?
+"GET /earth
+"GET /ecp
+"GET /geoserver
+"GET /humans\.txt
+"GET /level
+"GET /manage
+"GET /owa
+"GET /phpmyadmin
+"GET /remote
+"GET /showLogin\.cc
+"GET /t4
+"GET /tripmap/
+"GET /u_NhtL.php
+"GET /vendor
+"GET /version
+"GET /\.env
+"GET /\.git
+"GET /\.hg
+"GET /\?
+"GET /_profiler
+"GET /_profiler/
+"MGLNDD
+"mining\.subscribe
+"POST /dns-query
+"POST /owa
+"POST /xmlrpc
+"PRI *
+000000000000\.cfg
+A@BAE@FAI
+Cookie: mstshash=
+login\.php\?p=login
+mozglue\.dll
+v1/config/
+xmlrpc
+zmzi
+\\x00
+\\x16\\x03\\x01
