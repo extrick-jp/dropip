@@ -5,11 +5,13 @@ version 2.x
 copyright 2023. EXTRICK LLC.
 
 ■ What's dropip?
+
 Webサーバーのアクセスログをスキャンして、不審なアクセス元のIPを探し出し、.htaccessに登録して今後のアクセスを拒否するツールです。
 ブルートフォースアタックを有効にブロックします。
 
 
 ■ Composition
+
 dropip.py       本体スクリプト
 denywords       拒否する単語を登録しておきます
 allowip         許可するIPを登録しておきます。
@@ -17,6 +19,7 @@ allowwords      許可する単語を登録しておきます
 
 
 ■ Options
+
 dropip.py -h または dropip.py --help で表示されます。
 -s --server     apache または nginx を指定します。（apache）
 -l --accesslog  スキャンするログファイルを指定します。（/var/log/httpd/access_log）
@@ -26,6 +29,7 @@ dropip.py -h または dropip.py --help で表示されます。
 
 
 ■ Install & Usage
+
 cron で定期的に実行することを想定しています。
 適当な場所にファイル一式をコピーします。
 例：
@@ -56,6 +60,7 @@ denywords
 
 
 ■ Execution
+
 実際に運用する際は、次のようなバッチファイルを cron に登録すると管理が楽になります。
 
 apache の場合
@@ -97,6 +102,7 @@ pass.log を開いて、怪しいアクセスを探してください。
 
 
 ■ How to
+
 apache で wordpress が生成した .htaccess があるなど、予め設定した .htaccess がある場合は、.htaccess をリネーム（例：.htaccess.x）しておき、オプション -i で読み込むようにします。出力ファイル（deny.conf）に拒否リストを出力する前に、.htaccess.x の内容を出力します。
 例：
 dropip.py -i .htaccess.x
@@ -111,11 +117,13 @@ cat .htaccess.x deny.conf foreign_ip.conf > .htaccess
 
 
 ■ 正規表現
+
 allowwords、denywords に記述する正規表現は、'/' 以外のメタ文字を '\' でエスケープした文字列です。
 例："GET /class.api.php を拒否する場合
     denywords には、"GET /class\.api\.php を登録します。
 
 
 ■ 更新履歴
+
 version 2.0 2023.09.13
     以前の php cli版を python3 で書き換えて公開しました。
