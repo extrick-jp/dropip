@@ -24,7 +24,7 @@ for i in range(len(sys.argv)):
     if sys.argv[i][0:1] != '-':
         continue
     if '-h' in sys.argv or '--help' in sys.argv:
-        print("dropip.py [-s {apache|nginx}] [-l FULLPATH_ACCESS_LOG] [-o OUTPUT_FILE] [-i INSERT_FILE] [-t (int)THRESHOLD]")
+        print("dropip.py [-s {apache|nginx}][-l FULLPATH_ACCESS_LOG][-o OUTPUT_FILE][-t (int)THRESHOLD]")
         sys.exit()
     elif sys.argv[i] == '-s' or sys.argv[i] == '--server':
         if sys.argv[i+1] != 'apache' and sys.argv[i+1] != 'nginx':
@@ -35,8 +35,6 @@ for i in range(len(sys.argv)):
         config['accesslog'] = sys.argv[i+1]
     elif sys.argv[i] == '-o' or sys.argv[i] == '--outfile':
         config['outfile'] = sys.argv[i+1]
-    elif sys.argv[i] == '-i' or sys.argv[i] == '--insertfile':
-        config['insertfile'] = sys.argv[i+1]
     elif sys.argv[i] == '-t' or sys.argv[i] == '--threshold':
         config['threshold'] = int(sys.argv[i+1])
 
@@ -198,12 +196,6 @@ execlog.close()
 
 # write conf
 conf = open(config['outfile'], 'w')
-
-# insert file
-if config['insertfile']:
-    in_file = open(config['insertfile'])
-    for instr in in_file:
-        conf.write(instr)
 
 sql = "select `ip` from deny order by `ip`"
 db.execute(sql)
