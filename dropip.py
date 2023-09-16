@@ -25,11 +25,11 @@ for i in range(len(sys.argv)):
         continue
     if '-h' in sys.argv or '--help' in sys.argv:
         print("dropip.py [-s {apache|nginx}][-l FULLPATH_ACCESS_LOG][-o OUTPUT_FILE][-t (int)THRESHOLD]")
-        sys.exit()
+        sys.exit(0)
     elif sys.argv[i] == '-s' or sys.argv[i] == '--server':
         if sys.argv[i+1] != 'apache' and sys.argv[i+1] != 'nginx':
             print("Server type is 'apache' or 'nginx'")
-            sys.exit()
+            sys.exit(1)
         config['server'] = sys.argv[i+1]
     elif sys.argv[i] == '-l' or sys.argv[i] == '--log':
         config['accesslog'] = sys.argv[i+1]
@@ -92,7 +92,7 @@ try:
     accesslog = open(config['accesslog'])
 except FileNotFoundError:
     print('Not exists '+config['accesslog'])
-    sys.exit()
+    sys.exit(1)
 
 # seek accesslog
 for instr in accesslog:
@@ -211,3 +211,7 @@ for item in arr:
 conf.close()
 dbcon.close()
 
+if count_deny:
+    sys.exit(1)
+else:
+    sys.exit(0)
