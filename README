@@ -90,8 +90,9 @@ pass.log を開いて、怪しいアクセスを探してください。
 
 
 ■ How to
-apache で wordpress が生成した .htaccess がある、予めダウンロードした海外のIPリスト（foreign_ip.conf）があるなどの場合は、バッチファイルの中で cat コマンドを使って、dropip.py の出力ファイル（deny.conf）に設定済みのファイルを結合してください。
-例： cat .htaccess.x deny.conf foreign_ip.conf > .htaccess
+apache で wordpress が生成した .htaccess がある、予めダウンロードした海外のIPリスト（foreign_ip.conf）があるなどの場合は、それらを別ファイルで保存しておき、バッチファイルの中で cat コマンドを使って、dropip.py の出力ファイル（deny.conf）に設定済みのファイルを結合してください。
+例： cat htaccess.template deny.conf foreign_ip.conf > .htaccess
+（オプション -i は廃止しました。）
 
 
 ■ 正規表現
@@ -101,5 +102,7 @@ allowwords、denywords に記述する正規表現は、'/' 以外のメタ文�
 
 
 ■ 更新履歴
+bugfix 2023.09.16
+  エラーカウントが閾値を超えても拒否リストに登録されないバグを修正しました。
 version 2.0 2023.09.13
   php（cli）で開発していたソースを python3 で書き換えて公開しました。
