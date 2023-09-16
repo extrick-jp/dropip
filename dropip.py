@@ -162,13 +162,12 @@ for instr in accesslog:
 
         if skey in count_accesslog:
             count_accesslog[skey] += 1
-
             if count_accesslog[skey] > config['threshold']:
                 sql = "select `ip` from `deny` where `ip` = ?"
                 db.execute(sql, (ip,))
                 data = db.fetchone()
 
-                if data != None:
+                if data == None:
                     sql = "insert into `deny` (`ip`, `code`, `insdate`) values (?, ?, ?)"
                     code = 'threshold(' + str(config['threshold']) + ')'
                     db.execute(sql, (ip, code, hiduke,))
