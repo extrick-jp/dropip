@@ -8,6 +8,10 @@ copyright 2023. EXTRICK LLC.
 Webサーバーのアクセスログをスキャンして、不審なアクセス元のIPを探し出し、.htaccessに登録して今後のアクセスを拒否するツールです。
 ブルートフォースアタックを有効にブロックします。
 
+This is a tool that scans web server access logs, finds suspicious access source IPs, and registers them in .htaccess to deny future access.
+Effectively blocks brute force attacks.
+
+
 ■ Composition
 dropip.py       本体スクリプト
 denywords       拒否する単語を登録しておきます
