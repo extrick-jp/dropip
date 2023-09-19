@@ -85,7 +85,7 @@ count_accesslog = {}
 denied = ''
 count_deny = 0
 
-ptn_count = re.compile(r'\[(\d\d).+?\+0900\]\s".*?"\s(\d)\d\d\s')
+ptn_count = re.compile(r'\[(\d\d).+?[\+|\-]\d{4}\]\s".*?"\s(\d)\d\d\s')
 
 # scan access log
 try:
