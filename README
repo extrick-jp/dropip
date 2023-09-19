@@ -14,9 +14,9 @@ Effectively blocks brute force attacks.
 
 ■ Composition
 dropip.py       本体スクリプト
-denywords       拒否する単語を登録しておきます
-allowip         許可するIPを登録しておきます。
-allowwords      許可する単語を登録しておきます
+denywords       拒否する単語を登録しておきます。Register words to be rejected.
+allowip         許可するIPを登録しておきます。Register the IPs you want to allow.
+allowwords      許可する単語を登録しておきます。Register the words you want to allow.
 
 
 ■ Options
@@ -40,17 +40,24 @@ cron で定期的に実行することを想定しています。
 allowip
   ここに記載されたIPは無条件にアクセスを許可します。
   サーバー管理者のIPなどを登録しておきます。
+  IPs listed here will be allowed access unconditionally.
+  Register the server administrator's IP etc.
 
 allowwords
   ここに記載された文字列を含むアクセスは無条件に許可されます。
   正規表現で記述します。（後述）
+  Access containing the strings listed here is permitted unconditionally.
+  Describe it using regular expressions. (described later)
 
 denywords
   ここに記載された文字列を含むアクセスのアクセス元IPは拒否リストに登録されます。
   以降、拒否リストに登録されたIPからは、すべてのアクセスを拒否します。
   正規表現で記述します。（後述）
+  The access source IP that contains the character strings listed here will be registered in the denial list.
+  From then on, all access from IPs registered in the denial list will be denied.
+  Describe it using regular expressions. (described later)
 
-実行後に生成されるファイル
+Files generated after execution
   dropip.db   拒否IPを格納しているSQLite3データベース
   deny.conf   .htaccess（for apache）、nginx confファイル（for nginx）
   exec.log    今回の実行で拒否したIPと、日別のエラーカウントのリスト
