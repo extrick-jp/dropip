@@ -104,7 +104,7 @@ pass.log を開いて、怪しいアクセスを探してください。
 apache で wordpress が生成した .htaccess がある、予めダウンロードした海外のIPリスト（foreign_ip.conf）があるなどの場合は、それらを別ファイルで保存しておき、バッチファイルの中で cat コマンドを使って、dropip.py の出力ファイル（deny.conf）に設定済みのファイルを結合してください。
 例： cat htaccess.template deny.conf foreign_ip.conf > .htaccess
 （オプション -i は廃止しました。）
-
+ 
 
 ■ 正規表現
 allowwords、denywords に記述する正規表現は、'/' 以外のメタ文字を '\' でエスケープした文字列です。
