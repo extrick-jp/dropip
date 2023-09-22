@@ -15,7 +15,6 @@ from datetime import datetime
 config = {
     'server':'apache',          # apache or nginx
     'accesslog':'/var/log/httpd/access_log',    # full path of access log
-    'insertfile':'',            # insert file
     'outfile':'./deny.conf',    # output file
     'threshold':10,             # threshold of error(4xx 5xx) count
 }
