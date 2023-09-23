@@ -1,119 +1,184 @@
-# dropip
+dropip
 Deny the source of brute force attacks.
 
-version 2.x
-copyright 2023. EXTRICK LLC.
-
-■ What's dropip?
+・ What's dropip?
 Webサーバーのアクセスログをスキャンして、不審なアクセス元のIPを探し出し、.htaccessに登録して今後のアクセスを拒否するツールです。
 ブルートフォースアタックを有効にブロックします。
-
 This is a tool that scans web server access logs, finds suspicious access source IPs, and registers them in .htaccess to deny future access.
 Effectively blocks brute force attacks.
 
+・ Processing steps
+Loop to read access logs
+    Read access logs
+    ? Included in list of allowed IPs
+        Yes: continue →
+      ↓
+    ? Included in list of allowed words
+        Yes: continue →
+      ↓
+    ? included in list of denied words
+        Yes:
+            Add the accessing IP to the denied IP list
+            continue →
+      ↓
+    ? included ERR(4xx or 5xx)
+        Yes:
+            Count up the number of errors
+      ↓
+            ? threshold exceeded
+                Yes:
+                    Add the accessing IP to the denied IP list
+                    continue →
+              ↓
+    Add log to pass.log
+End of loop
 
-■ Composition
-dropip.py       本体スクリプト
-denywords       拒否する単語を登録しておきます。Register words to be rejected.
-allowip         許可するIPを登録しておきます。Register the IPs you want to allow.
-allowwords      許可する単語を登録しておきます。Register the words you want to allow.
+
+・ Composition
+dropip.py
+    本体スクリプト
+denywords
+    拒否する単語を登録しておきます。（Register words to be rejected.）
+allowip
+    許可するIPを登録しておきます。（Register the IPs you want to allow.）
+allowwords
+    許可する単語を登録しておきます。（Register the words you want to allow.）
 
 
-■ Options
-dropip.py -h または dropip.py --help で表示されます。
--s --server     apache または nginx を指定します。（apache）
--l --accesslog  スキャンするログファイルを指定します。（/var/log/httpd/access_log）
--o --outfile    出力するファイルを指定します。（./deny.conf）
--t --threshold  エラー（4xx、5xx）をカウントして拒否する閾値を指定します。（10）
+・ Options
+-s --server
+    apache または nginx を指定します。
+    Specify apache or nginx.
+    default: apache
+-l --accesslog
+    スキャンするログファイルを指定します。
+    Specifies the log files to scan.
+    default: /var/log/httpd/access_log
+-o --outfile
+    出力するファイルを指定します。
+    Specify the file to output.
+    default: ./deny.conf
+-t --threshold
+    エラー（4xx、5xx）をカウントして拒否する閾値を指定します。
+    Specify the threshold for counting and rejecting errors (4xx, 5xx).
+    default: 10
 
 
-■ Install & Usage
+・ Install & Usage
 cron で定期的に実行することを想定しています。
-適当な場所にファイル一式をコピーします。
-  例：
-  /usr/local/bin/dropip/
+適当な場所（例: /usr/local/bin/dropip）にファイル一式をコピーします。
+It is intended to be run periodically using cron.
+Copy the set of files to a suitable location (e.g. /usr/local/bin/dropip).
+
+/usr/local/bin/dropip/
     +-- dropip.py
     +-- allowip
     +-- allowwords
     +-- denywords
 
 allowip
-  ここに記載されたIPは無条件にアクセスを許可します。
-  サーバー管理者のIPなどを登録しておきます。
-  IPs listed here will be allowed access unconditionally.
-  Register the server administrator's IP etc.
-
+    ここに記載されたIPは無条件にアクセスを許可します。
+    サーバー管理者のIPなどを登録しておきます。
+    IPs listed here will be allowed access unconditionally.
+    Register the server administrator's IP etc.
 allowwords
-  ここに記載された文字列を含むアクセスは無条件に許可されます。
-  正規表現で記述します。（後述）
-  Access containing the strings listed here is permitted unconditionally.
-  Describe it using regular expressions. (described later)
-
+    ここに記載された文字列を含むアクセスは無条件に許可されます。
+    正規表現で記述します。（後述）
+    Access containing the strings listed here is permitted unconditionally.
+    Describe it using regular expressions. (described later)
 denywords
-  ここに記載された文字列を含むアクセスのアクセス元IPは拒否リストに登録されます。
-  以降、拒否リストに登録されたIPからは、すべてのアクセスを拒否します。
-  正規表現で記述します。（後述）
-  The access source IP that contains the character strings listed here will be registered in the denial list.
-  From then on, all access from IPs registered in the denial list will be denied.
-  Describe it using regular expressions. (described later)
+    ここに記載された文字列を含むアクセスのアクセス元IPは拒否リストに登録されます。
+    以降、拒否リストに登録されたIPからは、すべてのアクセスを拒否します。
+    正規表現で記述します。（後述）
+    The access source IP that contains the character strings listed here will be registered in the denial list.
+    From then on, all access from IPs registered in the denial list will be denied.
+    Describe it using regular expressions. (described later)
 
-Files generated after execution
-  dropip.db   拒否IPを格納しているSQLite3データベース
-  deny.conf   .htaccess（for apache）、nginx confファイル（for nginx）
-  exec.log    今回の実行で拒否したIPと、日別のエラーカウントのリスト
-  pass.log    今回の実行で拒否されなかったアクセスログ
+・ Files generated after execution
+dropip.db
+    拒否IPを格納しているSQLite3データベース
+    SQLite3 database storing rejected IPs 
+deny.conf
+    .htaccess（for apache）、nginx confファイル（for nginx）
+exec.log
+    最後の実行で拒否したIPと、日別のエラーカウントのリスト
+    List of IPs rejected in last run and error count by day 
+pass.log
+    最後の実行で拒否されなかったアクセスログ
+    Access logs that were not denied in the last run 
 
 
-■ Execution
-実際に運用する際は、次のようなバッチファイルを cron に登録すると管理が楽になります。
+・ Execution
+実際に運用する際は、次のようなバッチファイル（例: dropip.sh）を cron に登録すると管理が楽になります。
+During actual operation, management can be made easier by registering the following batch file (e.g. dropip.sh) in cron.
 
-apache の場合
-  dropip.sh を作成します。
+for apache
 
-  #!/bin/bash
-  cd /usr/local/bin/dropip
-  /bin/python3 ./dropip.py -s apache -l /var/log/httpd/access_log
-  cat ./exec.log
-  cp ./deny.conf /var/www/SITE_NAME/html/.htaccess
+#!/bin/bash
+cd /usr/local/bin/dropip
+/bin/python3 ./dropip.py -s apache -l /var/log/httpd/access_log
+cat ./exec.log
+cp ./deny.conf /var/www/SITE_NAME/html/.htaccess
 
-  crontab に dropip.sh を登録します。
-  51 * * * * /usr/bin/python3 /usr/local/bin/dropip/dropip.sh
 
-nginx の場合
-  dropip.sh を作成します。
-  拒否リストを出力後、nginx をリロードする必要があります。
+crontab に dropip.sh を登録します。
 
-  #!/bin/bash
-  cd /usr/local/bin/dropip
-  /bin/python3 ./dropip.py -s nginx -l /var/log/httpd/access_log
-  cat ./exec.log
-  systemctl reload nginx
+MAILTO=foo@hoge.jp
+51 * * * * /usr/local/bin/dropip/dropip.sh
 
-  crontab に dropip.sh を登録します。
-  51 * * * * /usr/bin/python3 /usr/local/bin/dropip/dropip.sh
 
-  出力ファイル（deny.conf）を nginx の設定ファイルとして読み込むように設定しておきます。
-  例： ln -s /usr/local/bin/dropip/deny.conf /etc/nginx/conf.d/deny.conf
+for nginx
+拒否リストを出力後、nginx をリロードする必要があります。
+After printing the deny list, you need to reload nginx.
+
+#!/bin/bash
+cd /usr/local/bin/dropip
+/bin/python3 ./dropip.py -s nginx -l /var/log/nginx/access.log
+cat ./exec.log
+systemctl reload nginx
+
+
+crontab に dropip.sh を登録します。
+
+MAILTO=foo@hoge.jp
+51 * * * * /usr/local/bin/dropip/dropip.sh
+
+
+出力ファイル（deny.conf）を nginx の設定ファイルとして読み込むように設定しておきます。
+Set the output file (deny.conf) to be read as an nginx configuration file.
+e.g.
+ln -s /usr/local/bin/dropip/deny.conf /etc/nginx/conf.d/deny.conf
+
 
 いずれも、exec.log を標準出力に出力して、メールで結果が届くようにしています。
-pass.log を開いて、怪しいアクセスを探してください。
-あるはずのないディレクトリやファイルへのアクセスはブルートフォースアタックの可能性があります。キーワードとして正規表現（後述）で  denywords に追加しておきましょう。
+実行後、pass.log を開いて怪しいアクセスを探してください。
+あるはずのないディレクトリやファイルへのアクセスはブルートフォースアタックの可能性があります。キーワードとして正規表現（後述）で denywords に追加しておきましょう。
+In both cases, exec.log is output to standard output and the results are sent via email.
+After execution, open pass.log and look for suspicious access.
+Accessing directories or files that are not supposed to exist may be a brute force attack. Add it as a keyword to denywords using a regular expression (described later).
+
+・ How to
+予めダウンロードした海外のIPリスト（foreign_ip.conf）がある、apache で wordpress が生成した .htaccess があるなどの場合は、それらを別ファイルで保存しておき、バッチファイルの中で cat コマンドを使って、dropip.py の出力ファイル（deny.conf）に設定済みのファイルを結合してください。
+If you have a foreign IP list (foreign_ip.conf) that you downloaded in advance or .htaccess that was generated by wordpress using apache, save them in a separate file and use the cat command in a batch file. , combine the configured file with the dropip.py output file (deny.conf).
+e.g.
+cat htaccess.template deny.conf foreign_ip.conf > .htaccess
 
 
-■ How to
-apache で wordpress が生成した .htaccess がある、予めダウンロードした海外のIPリスト（foreign_ip.conf）があるなどの場合は、それらを別ファイルで保存しておき、バッチファイルの中で cat コマンドを使って、dropip.py の出力ファイル（deny.conf）に設定済みのファイルを結合してください。
-例： cat htaccess.template deny.conf foreign_ip.conf > .htaccess
-（オプション -i は廃止しました。）
- 
-
-■ 正規表現
-allowwords、denywords に記述する正規表現は、'/' 以外のメタ文字を '\' でエスケープした文字列です。
+・ Regular expression
+allowwords、denywords に記述する正規表現は、メタ文字をバックスラッシュ '' でエスケープした文字列です。
+（スラッシュ '/' はメタ文字ではありません。）
 例："GET /class.api.php を拒否する場合
-  denywords には、"GET /class\.api\.php を登録します。
+denywords には、"GET /class\.api\.php を登録します。
+The regular expressions written in allowwords and denywords are strings with meta characters escaped with a backslash ''.
+(The slash '/' is not a metacharacter.)
+Example: "Rejecting GET /class.api.php"
+For denywords, register "GET /class\.api\.php.
 
+・ Change log
+2023.09.16 bugfix
+    エラーカウントが閾値を超えても拒否リストに登録されないバグを修正しました。
+    Fixed a bug where the error count was not added to the reject list even if it exceeded the threshold.
+2023.09.13 version 2.0
+    PHP CLI で開発していたソースを python3 で書き換えて公開しました。
+    I rewrote the source developed using PHP CLI using python3 and published it.
 
-■ 更新履歴
-bugfix 2023.09.16
-  エラーカウントが閾値を超えても拒否リストに登録されないバグを修正しました。
-version 2.0 2023.09.13
-  php（cli）で開発していたソースを python3 で書き換えて公開しました。
