@@ -62,7 +62,11 @@ allowwords
     エラー（4xx、5xx）をカウントして拒否する閾値を指定します。
     Specify the threshold for counting and rejecting errors (4xx, 5xx).
     default: 10
-
+-m --mailto
+    メールアドレスを指定すると、実行ログに From: To: Subject: を出力します。
+    これにより、実行ログを sendmail -i -t で送信できます。
+    If you specify an email address, From: To: Subject: will be output to the execution log.
+    This allows you to send execution logs with sendmail -i -t.
 
 ・ Install & Usage
 cron で定期的に実行することを想定しています。
@@ -112,18 +116,19 @@ pass.log
 実際に運用する際は、次のようなバッチファイル（例: dropip.sh）を cron に登録すると管理が楽になります。
 During actual operation, management can be made easier by registering the following batch file (e.g. dropip.sh) in cron.
 
+
 for apache
+出力の ./deny.conf を .htaccess にコピーします。
+Copy the output ./deny.conf to .htaccess.
 
 #!/bin/bash
 cd /usr/local/bin/dropip
-/bin/python3 ./dropip.py -s apache -l /var/log/httpd/access_log
-cat ./exec.log
+/bin/python3 ./dropip.py -s apache -l /var/log/httpd/access_log -m foo@hoge.jp || {
+    cat ./exec.log | sendmail -t -i
+}
 cp ./deny.conf /var/www/SITE_NAME/html/.htaccess
 
-
 crontab に dropip.sh を登録します。
-
-MAILTO=foo@hoge.jp
 51 * * * * /usr/local/bin/dropip/dropip.sh
 
 
@@ -133,27 +138,22 @@ After printing the deny list, you need to reload nginx.
 
 #!/bin/bash
 cd /usr/local/bin/dropip
-/bin/python3 ./dropip.py -s nginx -l /var/log/nginx/access.log
-cat ./exec.log
+/bin/python3 ./dropip.py -s nginx -l /var/log/nginx/access.log -m foo@hoge.jp || {
+    cat ./exec.log | sendmail -t -i
+}
 systemctl reload nginx
-
-
-crontab に dropip.sh を登録します。
-
-MAILTO=foo@hoge.jp
-51 * * * * /usr/local/bin/dropip/dropip.sh
-
 
 出力ファイル（deny.conf）を nginx の設定ファイルとして読み込むように設定しておきます。
 Set the output file (deny.conf) to be read as an nginx configuration file.
 e.g.
 ln -s /usr/local/bin/dropip/deny.conf /etc/nginx/conf.d/deny.conf
 
+crontab に dropip.sh を登録します。
+51 * * * * /usr/local/bin/dropip/dropip.sh
 
-いずれも、exec.log を標準出力に出力して、メールで結果が届くようにしています。
+
 実行後、pass.log を開いて怪しいアクセスを探してください。
 あるはずのないディレクトリやファイルへのアクセスはブルートフォースアタックの可能性があります。キーワードとして正規表現（後述）で denywords に追加しておきましょう。
-In both cases, exec.log is output to standard output and the results are sent via email.
 After execution, open pass.log and look for suspicious access.
 Accessing directories or files that are not supposed to exist may be a brute force attack. Add it as a keyword to denywords using a regular expression (described later).
 
@@ -175,6 +175,11 @@ Example: "Rejecting GET /class.api.php"
 For denywords, register "GET /class\.api\.php.
 
 ・ Change log
+2023.09.29 option -m (--mailto)
+    オプション -m でメールアドレスを指定すると、実行ログに From: To: Subject: を出力するようにしました。
+    実行ログを sendmail -i -t で送信できます。
+    When specifying an email address with option -m, From: To: Subject: is now output to the execution log.
+    You can send execution logs with sendmail -i -t.
 2023.09.16 bugfix
     エラーカウントが閾値を超えても拒否リストに登録されないバグを修正しました。
     Fixed a bug where the error count was not added to the reject list even if it exceeded the threshold.
