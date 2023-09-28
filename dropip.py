@@ -40,7 +40,7 @@ for i in range(len(sys.argv)):
     elif sys.argv[i] == '-t' or sys.argv[i] == '--threshold':
         config['threshold'] = int(sys.argv[i+1])
     elif sys.argv[i] == '-m' or sys.argv[i] == '--mailto':
-        config['mailto'] = int(sys.argv[i+1])
+        config['mailto'] = sys.argv[i+1]
 
 now = datetime.today()
 hiduke = now.strftime('%Y-%m-%d %H:%M:%S')
