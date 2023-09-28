@@ -10,6 +10,7 @@ import sys
 import re
 import sqlite3
 from datetime import datetime
+import socket
 
 # default
 config = {
@@ -17,6 +18,8 @@ config = {
     'accesslog':'/var/log/httpd/access_log',    # full path of access log
     'outfile':'./deny.conf',    # output file
     'threshold':10,             # threshold of error(4xx 5xx) count
+    'hostname':socket.gethostname(),
+    'mailto':'',
 }
 
 for i in range(len(sys.argv)):
@@ -36,15 +39,26 @@ for i in range(len(sys.argv)):
         config['outfile'] = sys.argv[i+1]
     elif sys.argv[i] == '-t' or sys.argv[i] == '--threshold':
         config['threshold'] = int(sys.argv[i+1])
+    elif sys.argv[i] == '-m' or sys.argv[i] == '--mailto':
+        config['mailto'] = int(sys.argv[i+1])
 
 now = datetime.today()
 hiduke = now.strftime('%Y-%m-%d %H:%M:%S')
 
 execlog = open('./exec.log', 'w')
+
+if config['mailto']:
+    outstr = 'From: dropip@' + config['hostname'] + '\n'
+    execlog.write(outstr)
+    outstr = 'To: ' + config['mailto'] + '\n'
+    execlog.write(outstr)
+    outstr = 'Subject: dropip ' + hiduke + '\n\n'
+    execlog.write(outstr)
+
 outstr = 'dropip ' + hiduke + '\n'
 execlog.write(outstr)
 
-outstr = 'log: ' + config['accesslog'] + '\n\n'
+outstr = 'log: ' + config['accesslog'] + '\n'
 execlog.write(outstr)
 
 # text to array
