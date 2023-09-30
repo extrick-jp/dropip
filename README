@@ -81,14 +81,14 @@ Copy the set of files to a suitable location (e.g. /usr/local/bin/dropip).
     +-- denywords
 
 allowip
-    ここに記載されたIPは無条件にアクセスを許可します。
-    サーバー管理者のIPなどを登録しておきます。
-    IPs listed here will be allowed access unconditionally.
-    Register the server administrator's IP etc.
+    ここに記載されたIPは拒否リストに登録されません。
+    サーバー管理者のIPなどを書いておきます。
+    IPs listed here will not be added to the block list.
+    Write down the IP address of the server administrator.
 allowwords
-    ここに記載された文字列を含むアクセスは無条件に許可されます。
+    ここに記載された文字列を含むアクセス元は拒否リストに登録されません。
     正規表現で記述します。（後述）
-    Access containing the strings listed here is permitted unconditionally.
+    Access sources that include the character strings listed here will not be registered in the denial list.
     Describe it using regular expressions. (described later)
 denywords
     ここに記載された文字列を含むアクセスのアクセス元IPは拒否リストに登録されます。
