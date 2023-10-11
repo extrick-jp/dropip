@@ -2,6 +2,8 @@
 # coding: utf-8
 
 # dropip.py
+# 2023.10.08 version 2.0.2 new option 'validity'
+# 2023.09.29 version 2.0.1 new option 'mailto'
 # 2023.09.13 version 2.0
 # -----------------------------------------------------------------------------
 
@@ -9,7 +11,7 @@ import os
 import sys
 import re
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 import socket
 
 # default
@@ -18,6 +20,7 @@ config = {
     'accesslog':'/var/log/httpd/access_log',    # full path of access log
     'outfile':'./deny.conf',    # output file
     'threshold':10,             # threshold of error(4xx 5xx) count
+    'validity':0,               # validity (0:None)
     'hostname':socket.gethostname(),
     'mailto':'',
 }
@@ -39,6 +42,8 @@ for i in range(len(sys.argv)):
         config['outfile'] = sys.argv[i+1]
     elif sys.argv[i] == '-t' or sys.argv[i] == '--threshold':
         config['threshold'] = int(sys.argv[i+1])
+    elif sys.argv[i] == '-v' or sys.argv[i] == '--validity':
+        config['validity'] = int(sys.argv[i+1])
     elif sys.argv[i] == '-m' or sys.argv[i] == '--mailto':
         config['mailto'] = sys.argv[i+1]
 
@@ -89,6 +94,14 @@ db = dbcon.cursor()
 if os.path.getsize('./dropip.db') == 0:
     sql = "create table deny (`ip` text primary key, `code` text, `insdate` text)"
     db.execute(sql)
+    dbcon.commit()
+
+# Delete data that has passed its expiration date
+if config['validity'] > 0:
+    vp = now - timedelta(days=config['validity'])
+    validity_period = vp.strftime('%Y-%m-%d %H:%M:%S')
+    sql = "delete from deny where `insdate` < ?"
+    db.execute(sql, (validity_period,))
     dbcon.commit()
 
 #
