@@ -1,6 +1,8 @@
 "curl/
 "CONNECT api.findip.net
 "GET /.+\.aspx
+"GET /.well-known
+"GET //
 "GET /ab2[a-z]
 "GET /actuator
 "GET /actuator/health
@@ -11,6 +13,7 @@
 "GET /auth
 "GET /autodiscover
 "GET /bin
+"GET /blog.php\?kw\%25
 "GET /cf_scripts/
 "GET /class\.api\.php
 "GET /debug
@@ -31,6 +34,7 @@
 "GET /u_NhtL.php
 "GET /vendor
 "GET /version
+"GET /wp-login\.php
 "GET /\.env
 "GET /\.git
 "GET /\.hg
@@ -51,6 +55,7 @@ mozglue\.dll
 v1/config/
 xmlrpc
 zmzi
+\\x[0-9a-fA-F]
 \\x0
 \\x1
 \\xff
