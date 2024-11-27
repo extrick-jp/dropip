@@ -202,3 +202,4 @@ For denywords, register "GET /class\.api\.php.
 2023.09.13 version 2.0
     PHP CLI で開発していたソースを python3 で書き換えて公開しました。
     I rewrote the source developed using PHP CLI using python3 and published it.
+
